@@ -1,0 +1,198 @@
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 15px 30px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 50;">
+    <!-- Логотип слева -->
+    <a href="/" style="text-decoration: none; color: #2c3e50; font-size: 1.4rem; font-weight: bold;">
+        SLibs
+    </a>
+
+            <!-- 🔍 ПОИСК В ШАПКЕ (Только если show_search=True) -->
+        {% if show_search %}
+        <form action="/find" method="GET" style="display: flex; gap: 8px;">
+            <input type="text" name="q" value="{{ query or '' }}" placeholder="Новый поиск..."
+                   style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; width: 200px; outline: none;">
+            <button type="submit" style="padding: 8px 16px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer;">Найти</button>
+        </form>
+        {% endif %}
+
+    <div style="display: flex; align-items: center; gap: 20px;">
+        {% if session.get('user') %}
+
+        <!-- ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ -->
+            <div style="position: relative;">
+                <img src="{{ session['user'].get('picture') or 'https://via.placeholder.com/36' }}"
+                     alt="Profile"
+                     onclick="document.getElementById('user-dropdown').style.display = document.getElementById('user-dropdown').style.display === 'block' ? 'none' : 'block'"
+                     style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid #2c3e50;">
+                <!-- Выпадающее меню (скрыто по умолчанию) -->
+                <div id="user-dropdown" style="display: none; position: absolute; right: 0; top: 50px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 12px; min-width: 200px; z-index: 100;">
+                    <div style="padding-bottom: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px;">
+                        <p style="margin: 0; font-weight: bold; color: #2c3e50; font-size: 0.95rem;">{{ session['user']['name'] }}</p>
+                        <p style="margin: 4px 0 0; color: #7f8c8d; font-size: 0.85rem;">{{ session['user']['email'] }}</p>
+                    </div>
+                    <a href="/logout" style="display: block; padding: 8px 12px; color: #e74c3c; text-decoration: none; border-radius: 4px; text-align: center; font-size: 0.9rem;">Выйти</a>
+                </div>
+            </div>
+        {% else %}
+            <!-- КНОПКА ВХОДА (если не вошёл) -->
+            <a href="/login" style="padding: 8px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">Войти через Google</a>
+        {% endif %}
+    </div>
+</header>
+<script>
+    window.onclick = function(event) {
+        if (!event.target.matches('img[alt="Profile"]')) {
+            var dropdown = document.getElementById('user-dropdown');
+            if (dropdown && dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            }
+        }
+    }
+</script>
+
+<!-- МОЯ БИБЛИОТЕКА -->
+<!-- Моя библиотека. Кнопка перехода -->
+<div id="library-fab" title="Моя библиотека">
+    📜
+    <span id="library-count">0</span> <!-- Количество книг -->
+</div>
+<!-- 2. Панель моей библиотеки -->
+<div id="library-drawer">
+    <div class="drawer-header">
+        <h2>Моя библиотека</h2>
+        <button id="close-drawer">✕</button>
+    </div>
+    <!-- Список моих книг -->
+    <div id="library-list">
+        <p>Тут пока пусто. Добавьте книги</p>
+    </div>
+</div>
+
+<!-- Затемнение фона -->
+<div id="drawer-overlay"></div>
+
+<!-- ШТОРКА -->
+<script>
+// 🔒 Ждём, пока вся страница загрузится
+    document.addEventListener('DOMContentLoaded', function() {
+
+// 1. Находим элементы (теперь они точно существуют)
+        const fab = document.getElementById('library-fab');
+        const drawer = document.getElementById('library-drawer');
+        const overlay = document.getElementById('drawer-overlay');
+        const closeBtn = document.getElementById('close-drawer');
+        const countBadge = document.getElementById('library-count');
+        const listContainer = document.getElementById('library-list');
+
+// 🔍 Проверка безопасности: если какого-то элемента нет, останавливаемся
+        if (!fab || !drawer || !overlay || !closeBtn || !countBadge || !listContainer) {
+            console.warn('⚠️ Элементы библиотеки не найдены. Проверь HTML.');
+            return;
+        }
+
+// 2. Загружаем сохранённые книги
+        let myLibrary = JSON.parse(localStorage.getItem('myLibrary')) || [];
+
+// 3. Функция обновления счётчика
+        function updateCount() {
+            const count = myLibrary.length;
+            countBadge.textContent = count;
+            countBadge.style.display = count > 0 ? 'flex' : 'none';
+        }
+        updateCount();
+
+// 4. Открытие шторки
+        fab.addEventListener('click', () => {
+            drawer.classList.add('open');
+            overlay.style.display = 'block';
+            renderLibrary();
+        });
+
+// 5. Закрытие шторки
+        function closeDrawer() {
+            drawer.classList.remove('open');
+            overlay.style.display = 'none';
+        }
+        closeBtn.addEventListener('click', closeDrawer);
+        overlay.addEventListener('click', closeDrawer);
+
+// 6. Отрисовка списка
+        function renderLibrary() {
+            if (myLibrary.length === 0) {
+                listContainer.innerHTML = '<p style="color: #888; text-align: center; margin-top: 20px;">Тут пока пусто. Добавь книги через поиск</p>';
+                return;
+            }
+            listContainer.innerHTML = myLibrary.map((book, index) => `
+                <div style="padding: 15px; border-bottom: 1px solid #eee;">
+                    <strong>${book.title}</strong>
+                    ${book.author ? `<br><small style="color:#666">${book.author}</small>` : ''}
+                    <br><a href="${book.link}" target="_blank" style="color:#3498db; font-size:12px; text-decoration:none;">🔗 Открыть</a>
+                    <button onclick="removeFromLibrary(${index})" style="float:right; background:none; border:none; color:#e74c3c; cursor:pointer; font-size:16px;">✕</button>
+                </div>
+            `).join('');
+        }
+
+// 7. Добавление книги
+        function addToLibrary(book) {
+            if (myLibrary.some(b => b.link === book.link)) {
+                alert('Книга уже в библиотеке!');
+                return;
+            }
+            myLibrary.push(book);
+            localStorage.setItem('myLibrary', JSON.stringify(myLibrary));
+            animateBookFly(event);
+            updateCount();
+            // alert(`"${book.title}" добавлена!`);
+        }
+
+// Анимация. Добавление в корзину
+        function animateBookFly(clickEvent) {
+            const flyingBook = document.createElement('div');
+            flyingBook.className = 'flying-book';
+            flyingBook.textContent = '📚';
+            document.body.appendChild(flyingBook);
+            const startRect = clickEvent.target.getBoundingClientRect();
+            const endRect = fab.getBoundingClientRect();
+            flyingBook.style.left = (startRect.left + startRect.width / 2) + 'px';
+            flyingBook.style.top = (startRect.top + startRect.height / 2) + 'px';
+
+            setTimeout(() => {
+                flyingBook.style.left = (endRect.left + endRect.width / 2) + 'px';
+                flyingBook.style.top = (endRect.top + endRect.height / 2) + 'px';
+                flyingBook.style.transform = 'scale(0.5)';  // Уменьшаем в конце
+                flyingBook.style.opacity = '0';
+            }, 50);
+
+            setTimeout(() => {
+                flyingBook.remove();
+            }, 850);
+
+            countBadge.classList.add('count-animate');
+            setTimeout(() => {
+                countBadge.classList.remove('count-animate');
+            }, 300);
+
+            const btn = clickEvent.target.closest('.save-btn');
+            if (btn) {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✓ Добавлено';
+                btn.classList.add('success');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('success');
+                }, 1500);
+            }
+        }
+
+
+// Удаление книги
+        window.removeFromLibrary = function(index) {
+            myLibrary.splice(index, 1);
+            localStorage.setItem('myLibrary', JSON.stringify(myLibrary));
+            updateCount();
+            renderLibrary();
+        };
+
+// Делаем функцию доступной для кнопок на карточках
+        window.addToLibrary = addToLibrary;
+    });
+</script>

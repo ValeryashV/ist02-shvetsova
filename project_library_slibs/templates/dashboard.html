@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <title>Поиск литературы</title>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <div style="padding: 60px 20px; text-align: center;">
+        <h1 style="font-size: 2.5rem; color: #2c3e50; margin-bottom: 30px;">Поиск литературы</h1>
+        <form action="/find" method="GET" style="max-width: 600px; margin: 0 auto;">
+            <input type="text" name="q" value="{{ query or '' }}" placeholder="Введите тему..."
+                   style="padding: 12px 20px; width: 100%; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; outline: none;">
+            <button type="submit" style="margin-top: 20px; padding: 12px 40px; font-size: 16px; background: #2c3e50; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                Найти
+            </button>
+        </form>
+    </div>
+</body>
+</html>
