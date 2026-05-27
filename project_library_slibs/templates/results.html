@@ -5,79 +5,113 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <title>Результаты поиска</title>
 </head>
+
+<script>
+function saveBookToLibrary(title, author, link) {
+    fetch('/api/save-book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',  // ⚠️ Критично! Передаёт cookie с сессией Flask
+        body: JSON.stringify({ title: title, author: author, link: link })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ Книга сохранена в БД');
+        } else {
+            alert('❌ ' + (data.error || 'Ошибка сохранения'));
+        }
+    })
+    .catch(err => {
+        console.error('Ошибка сети:', err);
+        alert('❌ Не удалось соединиться с сервером');
+    });
+}
+</script>
+
 <body>
     {% include 'header.html' %}
-    <h1>Результаты поиска</h1>
-    <hr>
 
-    <!-- Open Library книги -->
-    {% if books.open_library and books.open_library|length > 0 %}
-        <h2 style="margin: 20px 0 15px;">Open Library:</h2>
-        {% for book in books.open_library %}
-            <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
-                <h3 style="margin: 0 0 10px 0;">
-                    <a href="{{ book['link'] }}" target="_blank" style="text-decoration: none; color: #2c3e50; border-bottom: 2px solid #3498db;">
-                        {{ book['title'] }}
-                    </a>
-                </h3>
-                {% if book.get('authors') %}
-                    <p><strong>Автор:</strong> {{ book['authors'] | join(', ') }}</p>
-                {% else %}
-                    <p><strong>Автор:</strong> Не указан</p>
-                {% endif %}
+    <main class="results-page">
+        <h1 class="results-page__title">Результаты поиска</h1>
+        <hr class="results-divider">
 
-                {% if book.get('first_publish_year') %}
-                    <p><strong>Год:</strong> {{ book['first_publish_year'] }}</p>
-                {% endif %}
+        <!-- Блок Open Library -->
+        {% if books.open_library and books.open_library|length > 0 %}
+            <section class="results-section">
+                <h2 class="results-section__title">Open Library:</h2>
 
-                <button class="save-btn" onclick='addToLibrary({
-                    title: {{ book["title"] | default("") | tojson }},
-                    author: {{ book["authors"] | default([]) | join(", ") | tojson }},
-                    link: {{ book["link"] | default("") | tojson }},
-                    year: {{ book["publishedDate"] | default("") | tojson }}
-                })'>
-                    Сохранить в библиотеку
-                </button>
-            </div>
-        {% endfor %}
-    {% endif %}
+                {% for book in books.open_library %}
+                    <article class="book-card">
+                        <h3 class="book-card__title">
+                            <a href="{{ book['link'] }}" target="_blank" class="book-card__link">
+                                {{ book['title'] }}
+                            </a>
+                        </h3>
 
-    <!-- Google Books книги -->
-    {% if books.google_books and books.google_books|length > 0 %}
-        <h2 style="margin: 20px 0 15px;"> Google Books:</h2>
-        {% for book in books.google_books %}
-            <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
-                <h3 style="margin: 0 0 10px 0;">
-                    <a href="{{ book['link'] }}" target="_blank" style="text-decoration: none; color: #2c3e50; border-bottom: 2px solid #3498db;">
-                        {{ book['title'] }}
-                    </a>
-                </h3>
+                        {% if book.get('authors') %}
+                            <p class="book-card__info"><strong>Автор:</strong> {{ book['authors'] | join(', ') }}</p>
+                        {% else %}
+                            <p class="book-card__info"><strong>Автор:</strong> Не указан</p>
+                        {% endif %}
 
-                {% if book.get('authors') %}
-                    <p><strong>Автор:</strong> {{ book['authors'] | join(', ') }}</p>
-                {% else %}
-                    <p><strong>Автор:</strong> Не указан</p>
-                {% endif %}
+                        {% if book.get('first_publish_year') %}
+                            <p class="book-card__info"><strong>Год:</strong> {{ book['first_publish_year'] }}</p>
+                        {% endif %}
 
-                {% if book.get('publishedDate') %}
-                    <p><strong>Год:</strong> {{ book['publishedDate'] }}</p>
-                {% endif %}
+                        <button class="btn save-btn" onclick='addToLibrary({
+                            title: {{ book["title"] | default("") | tojson }},
+                            author: {{ book["authors"] | default([]) | join(", ") | tojson }},
+                            link: {{ book["link"] | default("") | tojson }},
+                            year: {{ book["publishedDate"] | default("") | tojson }}
+                        })'>
+                            Сохранить в библиотеку
+                        </button>
+                    </article>
+                {% endfor %}
+            </section>
+        {% endif %}
 
-                <button class="save-btn" onclick='addToLibrary({
-                    title: {{ book["title"] | default("") | tojson }},
-                    author: {{ book["authors"] | default([]) | join(", ") | tojson }},
-                    link: {{ book["link"] | default("") | tojson }},
-                    year: {{ book["publishedDate"] | default("") | tojson }}
-                })'>
-                    Сохранить в библиотеку
-                </button>
-            </div>
-        {% endfor %}
-    {% endif %}
+        <!-- Блок Google Books (такая же структура) -->
+        {% if books.google_books and books.google_books|length > 0 %}
+            <section class="results-section">
+                <h2 class="results-section__title">Google Books:</h2>
 
-    <!-- Если ничего не найдено -->
-    {% if (not books.open_library or books.open_library|length == 0) and (not books.google_books or books.google_books|length == 0) %}
-        <p style="margin-top: 20px; color: #666;">По вашему запросу ничего не найдено</p>
-    {% endif %}
+                {% for book in books.google_books %}
+                    <article class="book-card">
+                        <h3 class="book-card__title">
+                            <a href="{{ book['link'] }}" target="_blank" class="book-card__link">
+                                {{ book['title'] }}
+                            </a>
+                        </h3>
+
+                        {% if book.get('authors') %}
+                            <p class="book-card__info"><strong>Автор:</strong> {{ book['authors'] | join(', ') }}</p>
+                        {% else %}
+                            <p class="book-card__info"><strong>Автор:</strong> Не указан</p>
+                        {% endif %}
+
+                        {% if book.get('publishedDate') %}
+                            <p class="book-card__info"><strong>Год:</strong> {{ book['publishedDate'] }}</p>
+                        {% endif %}
+
+                        <button class="btn save-btn" onclick='addToLibrary({
+                            title: {{ book["title"] | default("") | tojson }},
+                            author: {{ book["authors"] | default([]) | join(", ") | tojson }},
+                            link: {{ book["link"] | default("") | tojson }},
+                            year: {{ book["publishedDate"] | default("") | tojson }}
+                        })'>
+                            Сохранить в библиотеку
+                        </button>
+                    </article>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <!-- Если ничего не найдено -->
+        {% if (not books.open_library or books.open_library|length == 0) and (not books.google_books or books.google_books|length == 0) %}
+            <p class="results-empty"> По вашему запросу ничего не найдено</p>
+        {% endif %}
+    </main>
 </body>
 </html>

@@ -1,4 +1,46 @@
 /* ============================================
+   🏠 ГЛАВНАЯ СТРАНИЦА (index.html)
+   ============================================ */
+
+/* Обёртка контента (кнопка "Войти") */
+.index-wrapper {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+/* Заголовок "SLibs" на главной */
+.index-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Подзаголовок "Поиск учебной литературы..." */
+.index-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+/* Кнопка "Войти через Google" */
+.index-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.index-btn:hover {
+    background: #2980b9;
+}
+
+
+/* ============================================
    1. ПЛАВАЮЩАЯ КНОПКА (внизу справа)
    ============================================ */
 #library-fab {
@@ -175,4 +217,505 @@
     background-color: #27ae60 !important;  /* Зелёный */
     color: white !important;
     border-color: #27ae60 !important;
+}
+
+
+/* СТРАНИЦА ПОИСКА*/
+
+/* Контейнер секции*/
+.search-selection {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+/* Заголовок*/
+.search-title {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* Форма поиска*/
+.search-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/**/
+.search-input {
+    padding: 12px 20px;
+    width: 100%;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+/**/
+.search-button {
+    margin-top: 20px;
+    padding: 12px 40px;
+    font-size: 16px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+
+/* РЕЗУЛЬТАТ ПОИСКА*/
+
+.results-page {
+    padding: 30px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.results-page__title {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.results-divider {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 20px 0 30px;
+}
+
+.results-section {
+    margin-bottom: 40px;
+}
+
+.results-section__title {
+    font-size: 1.4rem;
+    color: #34495e;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Карточка книги */
+.book-card {
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    background: #ffffff;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.book-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.book-card__title {
+    margin: 0 0 12px;
+    font-size: 1.25rem;
+    line-height: 1.3;
+}
+
+.book-card__link {
+    color: #2c3e50;
+    text-decoration: none;
+    border-bottom: 2px solid #3498db;
+    transition: border-color 0.2s ease;
+}
+
+.book-card__link:hover {
+    border-bottom-color: #2980b9;
+}
+
+.book-card__info {
+    margin: 8px 0;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* Пустое состояние */
+.results-empty {
+    text-align: center;
+    color: #7f8c8d;
+    margin-top: 50px;
+    font-size: 1.1rem;
+    padding: 40px 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+
+/* ВСТУПЛЕНИЕ С АНИМАЦИЕЙ*/
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: sans-serif; overflow-x: hidden; }
+
+#intro-stage {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: #111;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+#light-flash {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: white;
+    opacity: 0;
+    z-index: 101;
+    pointer-events: none;
+
+    animation: flash 1.2s ease-in-out forwards;
+    animation-delay: 1.1s;
+}
+#site-title {
+    position: absolute;
+    z-index: 102;
+    color: #333;
+    font-size: 3rem;
+    font-weight: bold;
+    opacity: 0;
+    transform: translateY(20px);
+
+    animation: titleAppear 1.5s ease-out forwards;
+    animation-delay: 2.0s;
+}
+#main-content {
+    position: relative;
+    z-index: 1;       /* Лежит в самом низу */
+    min-height: 100vh;
+    padding: 40px;
+    background: #f9f9f9;
+    opacity: 0;       /* Пока невидим */
+}
+
+.book-container {
+    perspective: 1200px;
+    width: 140px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+.book {
+    --thickness: 80px;
+    width: 90px;
+    height: 130px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(60deg) rotateY(0deg);
+}
+.book-cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #2c3e50;
+    border-radius: 4px 8px 8px 4px;
+    box-shadow: 2px 2px 15px rgba(0,0,0,0.6);
+}
+.book-cover.front {
+    transform:translateZ(calc(var(--thickness) / 2));
+    z-index: 3;
+    transform-origin: left center;
+    animation: openBook 2.3s ease-in-out forwards;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3), 2px 2px 15px rgba(0,0,0,0.6);
+}
+.book-cover.back {
+    transform: translateZ(calc(var(--thickness) / -2));
+    z-index: 1;
+}
+
+.spine {
+    position: absolute;
+    top: 0;
+    left: calc(var(--thickness) * -0.5);
+    width: var(--thickness);
+    height: 100%;
+    background: #1a252f;
+    border-radius: 2px;
+    transform: rotateY(90deg);
+    transform-origin: left;
+    z-index: 0;
+}
+.book-pages {
+    position: absolute;
+    width: 96%;
+    height: 96%;
+    top: 2%;
+    left: 2%;
+    background: #fdfbf7;
+    background-image: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.02) 0px,
+        rgba(0,0,0,0.02) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    transform: translateZ(0);
+    border-radius: 2px 4px 4px 2px;
+    box-shadow: inset 4px 0 12px rgba(0,0,0,0.15);
+    z-index: 2;
+}
+
+
+.pages-thick {
+    position: absolute;
+    top: 0px; bottom: 0px; left: 0;
+    width: var(--thickness);
+    background: #f4f1ea;
+
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            #e0dcd3 0px,
+            #e0dcd3 0.5px,
+            transparent 0.5px,
+            transparent 1.2px
+        );
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    box-shadow:
+        inset 6px 0 12px rgba(0,0,0,0.2),
+        inset -6px 0 12px rgba(255,255,255,0.9);
+    transform: rotateY(90deg) translateZ(calc(var(--thickness) / -2));
+    transform-origin: left;
+    border-radius: 0 1px 1px 0;
+    z-index: 0;
+}
+
+.pages-body {
+    position: absolute;
+    top: 2px; bottom: 2px; left: 2px; right: 2px;
+    background: #fff;
+    transform: translateZ(0);
+    z-index: 1;
+}
+
+.fore-edge {
+    position: absolute;
+    right: calc(var(--thickness) * -0.5);
+    width: var(--thickness);
+    height: 100%;
+    background: #f4f1ea;
+    transform: rotateY(90deg);
+    z-index: 0;
+}
+
+@keyframes openBook {
+    0% { transform: translateZ(calc(var(--thickness) / 2)) rotateY(0deg); }
+    100% { transform: translateZ(calc(var(--thickness) / 2)) rotateY(-170deg); }
+}
+
+@keyframes flash {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes titleAppear {
+    0% { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+    100% { opacity: 1; transform: translateY(0);  filter: blur(0px); }
+}
+
+#intro-stage.finished {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+}
+
+/* 🔧 Добавляем плавное появление контента */
+#main-content { transition: opacity 1s ease; }
+
+
+/* ШАПКА САЙТА (header.html) */
+
+/* Контейнер шапки */
+.site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+/* Логотип */
+.header-logo {
+    text-decoration: none;
+    color: #2c3e50;
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+/* Форма поиска в шапке */
+.header-search-form {
+    display: flex;
+    gap: 8px;
+}
+
+.header-search-input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 200px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.header-search-input:focus {
+    border-color: #2c3e50;
+}
+
+.header-search-btn {
+    padding: 8px 16px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.header-search-btn:hover {
+    background: #1a252f;
+}
+
+/* Меню пользователя */
+.header-user-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.avatar-wrapper {
+    position: relative;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #2c3e50;
+    transition: transform 0.2s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
+}
+
+/* Выпадающее меню пользователя */
+.user-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 12px;
+    min-width: 200px;
+    z-index: 100;
+}
+
+.user-dropdown.show {
+    display: block;
+}
+
+.dropdown-info {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+}
+
+.dropdown-name {
+    margin: 0;
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 0.95rem;
+}
+
+.dropdown-email {
+    margin: 4px 0 0;
+    color: #7f8c8d;
+    font-size: 0.85rem;
+}
+
+.btn-logout {
+    display: block;
+    padding: 8px 12px;
+    color: #e74c3c;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.btn-logout:hover {
+    background: #f8f9fa;
+}
+
+.btn-login-header {
+    padding: 8px 20px;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.btn-login-header:hover {
+    background: #2980b9;
+}
+
+/* СПИСОК КНИГ В ШТОРКЕ (рендерится через JS)*/
+
+.library-empty {
+    color: #888;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.library-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.library-author {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.library-link {
+    color: #3498db;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.library-link:hover {
+    text-decoration: underline;
+}
+
+.btn-remove {
+    float: right;
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.btn-remove:hover {
+    color: #c0392b;
 }

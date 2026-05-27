@@ -2,6 +2,8 @@ from flask import session, redirect, url_for, Blueprint
 from authlib.integrations.flask_client import OAuth
 import os
 from dotenv import load_dotenv
+from database import get_db
+from crud import get_user_by_google_id, create_user
 
 load_dotenv()
 oauth_bp = Blueprint('oauth', __name__, url_prefix='/')
@@ -28,6 +30,16 @@ def init_oauth(app):
         token = google.authorize_access_token()
         user_info = token.get('userinfo')
         session['user'] = user_info
+        google_id = user_info['sub']
+        # 3. Открываем сессию БД на время этого запроса
+        with next(get_db()) as db:
+            existing_user = get_user_by_google_id(db, google_id)
+            if not existing_user:
+                user = create_user(db, google_id, user_info['email'], user_info['name'], user_info.get('picture'))
+            else:
+                user = existing_user
+        session['user_id'] = user.id
+        print("DB User ID:", session.get('user_id'))
         return redirect(url_for('main.index'))
 
     @oauth_bp.route('/logout')

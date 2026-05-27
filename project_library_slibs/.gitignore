@@ -1,11 +1,14 @@
 # Python
+.env
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 *.so
 .Python
 env/
 venv/
+.venv/
 ENV/
 build/
 develop-eggs/
@@ -22,6 +25,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.idea/
 
 # PyCharm
 ../.idea/
@@ -38,3 +42,6 @@ project_library_slibs/.env
 # OS
 .DS_Store
 Thumbs.db
+
+*.db
+*.sqlite3

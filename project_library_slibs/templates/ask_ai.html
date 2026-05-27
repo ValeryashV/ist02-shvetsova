@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <title>ИИ-помощник</title>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    {% for msg in chat_history %}
+    {% if msg.role == 'user' %}
+        <!-- Это сообщение от пользователя (выравниваем вправо, синий цвет) -->
+        <div style="text-align: right; margin-bottom: 10px;">
+            <span style="background: #3498db; color: white; padding: 10px; border-radius: 10px;">
+                {{ msg.content }}
+            </span>
+        </div>
+    {% else %}
+        <!-- Это сообщение от ИИ (выравниваем влево, серый цвет) -->
+        <div style="text-align: left; margin-bottom: 10px;">
+            <span style="background: #f1f1f1; color: #333; padding: 10px; border-radius: 10px;">
+                {{ msg.content }}
+            </span>
+        </div>
+    {% endif %}
+{% endfor %}
+
+    <div style="max-width: 600px; margin: 40px auto; padding: 20px;">
+        <h2>Спроси ИИ</h2>
+        <!-- Форма должна отправлять данные методом POST -->
+        <form method="POST">
+            <textarea name="question" rows="3" style="width: 100%; padding: 10px;"></textarea>
+            <button type="submit">Отправить</button>
+        </form>
+
+        {% if answer %}
+        <div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+            <strong>Ответ:</strong>
+            <p style="white-space: pre-wrap;">{{ answer }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
